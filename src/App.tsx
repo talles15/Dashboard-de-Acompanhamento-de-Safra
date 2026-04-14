@@ -52,6 +52,7 @@ export default function App() {
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedProdutor, setSelectedProdutor] = useState('Todos');
   const [selectedCultivar, setSelectedCultivar] = useState('Todas');
+  const [selectedMoega, setSelectedMoega] = useState('Todas');
 
   // Update dates when data changes
   useEffect(() => {
@@ -62,9 +63,37 @@ export default function App() {
     }
   }, [activeData]);
 
-  // Unique lists for filters
+  // Unique lists for filters (Cascading)
   const produtores = useMemo(() => Array.from(new Set(activeData.map(d => d.Produtor))).sort(), [activeData]);
-  const cultivares = useMemo(() => Array.from(new Set(activeData.map(d => d.Cultivar))).sort(), [activeData]);
+
+  const moegas = useMemo(() => {
+    const dataForMoega = selectedProdutor === 'Todos' 
+      ? activeData 
+      : activeData.filter(d => d.Produtor === selectedProdutor);
+    return Array.from(new Set(dataForMoega.map(d => d.Moega || 'N/A'))).sort();
+  }, [activeData, selectedProdutor]);
+
+  const cultivares = useMemo(() => {
+    const dataForCultivar = activeData.filter(d => {
+      const isProdutorMatch = selectedProdutor === 'Todos' || d.Produtor === selectedProdutor;
+      const isMoegaMatch = selectedMoega === 'Todas' || (d.Moega || 'N/A') === selectedMoega;
+      return isProdutorMatch && isMoegaMatch;
+    });
+    return Array.from(new Set(dataForCultivar.map(d => d.Cultivar))).sort();
+  }, [activeData, selectedProdutor, selectedMoega]);
+
+  // Reset dependent filters if they become invalid
+  useEffect(() => {
+    if (selectedMoega !== 'Todas' && !moegas.includes(selectedMoega)) {
+      setSelectedMoega('Todas');
+    }
+  }, [moegas, selectedMoega]);
+
+  useEffect(() => {
+    if (selectedCultivar !== 'Todas' && !cultivares.includes(selectedCultivar)) {
+      setSelectedCultivar('Todas');
+    }
+  }, [cultivares, selectedCultivar]);
 
   // Filtered Data
   const filteredData = useMemo(() => {
@@ -78,9 +107,10 @@ export default function App() {
       });
       const isProdutorMatch = selectedProdutor === 'Todos' || d.Produtor === selectedProdutor;
       const isCultivarMatch = selectedCultivar === 'Todas' || d.Cultivar === selectedCultivar;
-      return isDateMatch && isProdutorMatch && isCultivarMatch;
+      const isMoegaMatch = selectedMoega === 'Todas' || (d.Moega || 'N/A') === selectedMoega;
+      return isDateMatch && isProdutorMatch && isCultivarMatch && isMoegaMatch;
     });
-  }, [activeData, startDate, endDate, selectedProdutor, selectedCultivar]);
+  }, [activeData, startDate, endDate, selectedProdutor, selectedCultivar, selectedMoega]);
 
   // Stats
   const stats = useMemo(() => {
@@ -236,6 +266,10 @@ export default function App() {
               <p className="text-[10px] uppercase tracking-wider text-sleek-text-secondary font-bold">Cultivar</p>
               <p className="text-sm font-semibold">{selectedCultivar}</p>
             </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-sleek-text-secondary font-bold">Moega</p>
+              <p className="text-sm font-semibold">{selectedMoega}</p>
+            </div>
           </div>
         </div>
 
@@ -244,10 +278,13 @@ export default function App() {
           <Filters 
             produtores={produtores}
             cultivares={cultivares}
+            moegas={moegas}
             selectedProdutor={selectedProdutor}
             selectedCultivar={selectedCultivar}
+            selectedMoega={selectedMoega}
             onProdutorChange={setSelectedProdutor}
             onCultivarChange={setSelectedCultivar}
+            onMoegaChange={setSelectedMoega}
             startDate={startDate}
             endDate={endDate}
             onDateChange={(start, end) => {

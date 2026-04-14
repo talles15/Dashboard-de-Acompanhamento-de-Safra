@@ -1,13 +1,16 @@
 import React from 'react';
-import { Calendar, User, Sprout } from 'lucide-react';
+import { Calendar, User, Sprout, LayoutDashboard } from 'lucide-react';
 
 interface FiltersProps {
   produtores: string[];
   cultivares: string[];
+  moegas: string[];
   selectedProdutor: string;
   selectedCultivar: string;
+  selectedMoega: string;
   onProdutorChange: (val: string) => void;
   onCultivarChange: (val: string) => void;
+  onMoegaChange: (val: string) => void;
   startDate: string;
   endDate: string;
   onDateChange: (start: string, end: string) => void;
@@ -16,10 +19,13 @@ interface FiltersProps {
 export const Filters: React.FC<FiltersProps> = ({
   produtores,
   cultivares,
+  moegas,
   selectedProdutor,
   selectedCultivar,
+  selectedMoega,
   onProdutorChange,
   onCultivarChange,
+  onMoegaChange,
   startDate,
   endDate,
   onDateChange
@@ -65,6 +71,19 @@ export const Filters: React.FC<FiltersProps> = ({
         >
           <option value="Todas">Cultivar: Todas</option>
           {cultivares.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <span className="text-[10px]">▼</span>
+      </div>
+
+      <div className="text-[12px] px-3 py-1.5 border border-sleek-border rounded bg-white text-sleek-text-secondary flex items-center gap-2 cursor-pointer hover:border-sleek-accent transition-colors">
+        <LayoutDashboard className="w-3.5 h-3.5" />
+        <select 
+          value={selectedMoega}
+          onChange={(e) => onMoegaChange(e.target.value)}
+          className="bg-transparent focus:outline-none cursor-pointer appearance-none"
+        >
+          <option value="Todas">Moega: Todas</option>
+          {moegas.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
         <span className="text-[10px]">▼</span>
       </div>

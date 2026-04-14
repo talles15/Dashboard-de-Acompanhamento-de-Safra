@@ -11,6 +11,7 @@
         "Umidade (%)": { "type": "number", "description": "Percentual de umidade" },
         "Produtor": { "type": "string", "description": "Nome do produtor" },
         "Cultivar": { "type": "string", "description": "Tipo de cultivar" },
+        "Moega": { "type": "string", "description": "Identificador da moega de descarga" },
         "uploadedAt": { "type": "string", "format": "date-time", "description": "Data/hora do upload" }
       },
       "required": ["Ticket", "Data", "Liquido Sem Desc", "Umidade (%)", "Produtor", "Cultivar"]

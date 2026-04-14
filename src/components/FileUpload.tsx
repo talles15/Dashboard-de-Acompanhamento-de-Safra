@@ -38,6 +38,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onReset, h
           'Umidade (%)': parseFloat(item['Umidade (%)'] || item['UMIDADE'] || 0),
           Produtor: item.Produtor || item['PRODUTOR'] || 'Desconhecido',
           Cultivar: item.Cultivar || item['CULTIVAR'] || 'Desconhecida',
+          Moega: String(item.Moega || item['MOEGA'] || ''),
         }));
 
         // Save to Firebase (Open Access)

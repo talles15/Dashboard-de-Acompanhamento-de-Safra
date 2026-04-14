@@ -5,6 +5,7 @@ export interface CargoData {
   'Umidade (%)': number;
   Produtor: string;
   Cultivar: string;
+  Moega?: string;
 }
 
 export interface DashboardStats {
