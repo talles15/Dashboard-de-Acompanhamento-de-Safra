@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+  --color-sleek-bg: #f4f7f9;
+  --color-sleek-header: #ffffff;
+  --color-sleek-accent: #1a73e8;
+  --color-sleek-text-main: #202124;
+  --color-sleek-text-secondary: #5f6368;
+  --color-sleek-border: #dadce0;
+  --color-sleek-card: #ffffff;
+  --color-sleek-danger: #d93025;
+  --color-sleek-success: #1e8e3e;
+}
+
+@layer base {
+  body {
+    @apply bg-sleek-bg text-sleek-text-main antialiased;
+  }
+}
+
+/* Custom scrollbar matching the sleek theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-sleek-border rounded-full hover:bg-slate-400 transition-colors;
+}
+
+@media print {
+  header, 
+  .no-print,
+  button,
+  input[type="file"],
+  .bg-white.p-3.rounded-lg.border.border-sleek-border.flex.items-center.justify-between {
+    display: none !important;
+  }
+  
+  .print\:block {
+    display: block !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .grid {
+    display: grid !important;
+    gap: 1rem !important;
+  }
+
+  /* Force grid layout for stats cards in print */
+  .grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  }
+
+  .md\:col-span-3 {
+    grid-column: span 3 / span 3 !important;
+  }
+
+  .lg\:col-span-8 {
+    grid-column: span 8 / span 8 !important;
+  }
+
+  .lg\:col-span-4 {
+    grid-column: span 4 / span 4 !important;
+  }
+
+  .h-\[100px\], .h-\[300px\], .h-\[320px\] {
+    height: auto !important;
+    min-height: 100px;
+  }
+
+  /* Ensure charts have enough height in print */
+  .recharts-responsive-container {
+    min-height: 250px !important;
+  }
+
+  .bg-sleek-card {
+    border: 1px solid #dadce0 !important;
+    break-inside: avoid;
+  }
+}
+

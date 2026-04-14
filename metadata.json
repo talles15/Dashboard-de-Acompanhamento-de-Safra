@@ -1,0 +1,6 @@
+{
+  "name": "Dashboard de Acompanhamento de Safra",
+  "description": "Um dashboard corporativo para monitoramento de entrada de cargas, volume e qualidade da safra.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "Cargo": {
+      "title": "Cargo",
+      "description": "Representa uma carga de safra recebida",
+      "type": "object",
+      "properties": {
+        "Ticket": { "type": "string", "description": "Identificador único do ticket" },
+        "Data": { "type": "string", "format": "date", "description": "Data do recebimento (YYYY-MM-DD)" },
+        "Liquido Sem Desc": { "type": "number", "description": "Peso líquido em kg" },
+        "Umidade (%)": { "type": "number", "description": "Percentual de umidade" },
+        "Produtor": { "type": "string", "description": "Nome do produtor" },
+        "Cultivar": { "type": "string", "description": "Tipo de cultivar" },
+        "uploadedAt": { "type": "string", "format": "date-time", "description": "Data/hora do upload" }
+      },
+      "required": ["Ticket", "Data", "Liquido Sem Desc", "Umidade (%)", "Produtor", "Cultivar"]
+    }
+  },
+  "firestore": {
+    "/cargas/{ticketId}": {
+      "schema": "Cargo",
+      "description": "Coleção de todas as cargas recebidas"
+    }
+  }
+}

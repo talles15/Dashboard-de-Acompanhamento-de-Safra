@@ -1,0 +1,41 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: cargas
+// Document ID: {ticketId}
+// Fields:
+//   - Ticket: string (required)
+//   - Data: string (required, YYYY-MM-DD)
+//   - Liquido Sem Desc: number (required)
+//   - Umidade (%): number (required)
+//   - Produtor: string (required)
+//   - Cultivar: string (required)
+//   - uploadedAt: string (optional)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isValidCargo(data) {
+      return data.Ticket is string &&
+             data.Data is string &&
+             data['Liquido Sem Desc'] is number &&
+             data['Umidade (%)'] is number &&
+             data.Produtor is string &&
+             data.Cultivar is string;
+    }
+
+    match /cargas/{ticketId} {
+      // Acesso total para leitura e escrita (Público)
+      allow read, write: if true;
+    }
+  }
+}
