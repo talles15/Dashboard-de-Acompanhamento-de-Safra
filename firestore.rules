@@ -34,8 +34,9 @@ service cloud.firestore {
     }
 
     match /cargas/{ticketId} {
-      // Acesso total para leitura e escrita (Público)
-      allow read, write: if true;
+      // Leitura pública, escrita apenas para usuários autenticados
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidCargo(request.resource.data);
     }
   }
 }

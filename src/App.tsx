@@ -201,6 +201,28 @@ export default function App() {
       .slice(0, 10);
   }, [filteredData]);
 
+  // Cultivar Performance
+  const cultivarPerformance = useMemo(() => {
+    const grouped = filteredData.reduce((acc: any, curr) => {
+      if (!acc[curr.Cultivar]) {
+        acc[curr.Cultivar] = { cargas: 0, umidadeTotal: 0, volumeTotal: 0 };
+      }
+      acc[curr.Cultivar].cargas += 1;
+      acc[curr.Cultivar].umidadeTotal += curr['Umidade (%)'];
+      acc[curr.Cultivar].volumeTotal += curr['Liquido Sem Desc'];
+      return acc;
+    }, {});
+
+    return Object.entries(grouped)
+      .map(([name, data]: any) => ({
+        name,
+        cargas: data.cargas,
+        mediaUmidade: data.umidadeTotal / data.cargas,
+        volumeTotal: data.volumeTotal
+      }))
+      .sort((a, b) => b.volumeTotal - a.volumeTotal);
+  }, [filteredData]);
+
   const handleDataLoaded = (data: CargoData[]) => {
     // If not logged in, we just show locally
     setLocalData(data);
@@ -329,7 +351,7 @@ export default function App() {
           </div>
           <div className="col-span-12 md:col-span-3 h-[100px]">
             <Scorecard 
-              title="Volume Total Líquido" 
+              title="Volume Total Bruto" 
               value={<>{formatNumber(Math.round(stats.volumeTotalLiquido / 1000))} <span className="text-[14px] font-normal">ton</span></>} 
               icon={Scale}
               className="h-full"
@@ -380,30 +402,28 @@ export default function App() {
             </div>
           </div>
 
-          {/* 3. Análise de Qualidade e Tabela de Produtores */}
+          {/* 3. Análise de Qualidade e Tabelas de Desempenho */}
           <div className="col-span-12 lg:col-span-4 h-[320px]">
             <QualityDonutChart 
               data={qualityData} 
               title="Qualidade (Umidade)" 
             />
           </div>
-          <div className="col-span-12 lg:col-span-8 bg-sleek-card p-4 rounded-lg border border-sleek-border flex flex-col h-[320px]">
-            <h3 className="text-[14px] font-semibold text-sleek-text-main mb-4">Desempenho Top 10 Produtores (Volume)</h3>
+          <div className="col-span-12 lg:col-span-4 bg-sleek-card p-4 rounded-lg border border-sleek-border flex flex-col h-[320px]">
+            <h3 className="text-[14px] font-semibold text-sleek-text-main mb-4">Top 10 Produtores (Volume)</h3>
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse text-[12px]">
                 <thead>
                   <tr>
                     <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Produtor</th>
-                    <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Cargas</th>
-                    <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Média Umidade (%)</th>
-                    <th className="text-right text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Total Líquido (t)</th>
+                    <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Umidade</th>
+                    <th className="text-right text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Bruto (t)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {producerPerformance.map((p) => (
                     <tr key={p.name} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                      <td className="py-2 px-1 font-medium">{p.name}</td>
-                      <td className="py-2 px-1">{p.cargas}</td>
+                      <td className="py-2 px-1 font-medium truncate max-w-[100px]" title={p.name}>{p.name}</td>
                       <td className="py-2 px-1">
                         <span className={cn(
                           "px-1.5 py-0.5 rounded text-[10px] font-bold",
@@ -418,7 +438,40 @@ export default function App() {
                 </tbody>
               </table>
               {producerPerformance.length === 0 && (
-                <p className="text-center text-slate-400 py-12 text-xs">Sem dados no período</p>
+                <p className="text-center text-slate-400 py-12 text-xs">Sem dados</p>
+              )}
+            </div>
+          </div>
+          <div className="col-span-12 lg:col-span-4 bg-sleek-card p-4 rounded-lg border border-sleek-border flex flex-col h-[320px]">
+            <h3 className="text-[14px] font-semibold text-sleek-text-main mb-4">Quantidade por Cultivar</h3>
+            <div className="flex-1 overflow-auto">
+              <table className="w-full border-collapse text-[12px]">
+                <thead>
+                  <tr>
+                    <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Cultivar</th>
+                    <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Umidade</th>
+                    <th className="text-right text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Bruto (t)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cultivarPerformance.map((c) => (
+                    <tr key={c.name} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <td className="py-2 px-1 font-medium truncate max-w-[100px]" title={c.name}>{c.name}</td>
+                      <td className="py-2 px-1">
+                        <span className={cn(
+                          "px-1.5 py-0.5 rounded text-[10px] font-bold",
+                          c.mediaUmidade > 14 ? "bg-[#fce8e6] text-sleek-danger" : "bg-[#e6f4ea] text-sleek-success"
+                        )}>
+                          {c.mediaUmidade.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="py-2 px-1 text-right font-semibold text-sleek-accent">{formatNumber(Math.round(c.volumeTotal / 1000))}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {cultivarPerformance.length === 0 && (
+                <p className="text-center text-slate-400 py-12 text-xs">Sem dados</p>
               )}
             </div>
           </div>

@@ -16,6 +16,28 @@ interface FileUploadProps {
 export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onReset, hasData, isRealData }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [user, setUser] = useState(auth.currentUser);
+
+  React.useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.value ? e.target.files?.[0] : null;
@@ -34,7 +56,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onReset, h
         const mappedData: CargoData[] = data.map((item, index) => ({
           Ticket: String(item.Ticket || item['TICKET'] || `FILE-${index}`),
           Data: item.Data || item['DATA'] || new Date().toISOString().split('T')[0],
-          'Liquido Sem Desc': parseFloat(item['Liquido Sem Desc'] || item['LIQUIDO'] || item['PESO'] || 0),
+          'Liquido Sem Desc': parseFloat(item['Liquido Sem Desc'] || item['LIQUIDO'] || item['PESO'] || item['BRUTO'] || 0),
           'Umidade (%)': parseFloat(item['Umidade (%)'] || item['UMIDADE'] || 0),
           Produtor: item.Produtor || item['PRODUTOR'] || 'Desconhecido',
           Cultivar: item.Cultivar || item['CULTIVAR'] || 'Desconhecida',
@@ -76,14 +98,33 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onReset, h
       />
       
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-          className="flex items-center gap-2 bg-sleek-accent text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
-        >
-          {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-          {isUploading ? 'Enviando...' : 'Atualizar Dados (Planilha)'}
-        </button>
+        {!user ? (
+          <button
+            onClick={handleLogin}
+            className="flex items-center gap-2 bg-sleek-accent text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            Entrar para Atualizar
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="flex items-center gap-2 bg-sleek-accent text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
+            >
+              {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              {isUploading ? 'Enviando...' : 'Atualizar Dados (Planilha)'}
+            </button>
+            <button
+              onClick={handleLogout}
+              title="Sair"
+              className="p-1.5 text-sleek-text-secondary hover:text-sleek-danger transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
       </div>
 
       {isRealData && (
