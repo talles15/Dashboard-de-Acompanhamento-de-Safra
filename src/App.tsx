@@ -416,6 +416,7 @@ export default function App() {
                 <thead>
                   <tr>
                     <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Produtor</th>
+                    <th className="text-center text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Cargas</th>
                     <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Umidade</th>
                     <th className="text-right text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Bruto (t)</th>
                   </tr>
@@ -424,6 +425,7 @@ export default function App() {
                   {producerPerformance.map((p) => (
                     <tr key={p.name} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                       <td className="py-2 px-1 font-medium truncate max-w-[100px]" title={p.name}>{p.name}</td>
+                      <td className="py-2 px-1 text-center">{p.cargas}</td>
                       <td className="py-2 px-1">
                         <span className={cn(
                           "px-1.5 py-0.5 rounded text-[10px] font-bold",
@@ -449,6 +451,7 @@ export default function App() {
                 <thead>
                   <tr>
                     <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Cultivar</th>
+                    <th className="text-center text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Cargas</th>
                     <th className="text-left text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Umidade</th>
                     <th className="text-right text-sleek-text-secondary font-medium border-b border-sleek-border pb-2 px-1">Bruto (t)</th>
                   </tr>
@@ -457,6 +460,7 @@ export default function App() {
                   {cultivarPerformance.map((c) => (
                     <tr key={c.name} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                       <td className="py-2 px-1 font-medium truncate max-w-[100px]" title={c.name}>{c.name}</td>
+                      <td className="py-2 px-1 text-center">{c.cargas}</td>
                       <td className="py-2 px-1">
                         <span className={cn(
                           "px-1.5 py-0.5 rounded text-[10px] font-bold",
